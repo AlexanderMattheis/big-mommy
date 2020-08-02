@@ -1,5 +1,7 @@
 package app.panels.main_panel
 
+import javafx.beans.property.SimpleStringProperty
+import javafx.scene.control.TableColumn
 import tornadofx.*
 
 class MainPanelView : View("Big Mommy") {
@@ -19,6 +21,9 @@ class MainPanelView : View("Big Mommy") {
             }
         }
 
+        center = tableview(controller.rows) {
+            addClass(MainPanelStyle.tableClass)
+        }
 
         bottom = hbox {
             addClass(MainPanelStyle.statusBarClass)

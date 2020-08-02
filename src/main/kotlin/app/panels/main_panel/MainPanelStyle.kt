@@ -1,5 +1,6 @@
 package app.panels.main_panel
 
+import javafx.scene.layout.Border
 import javafx.scene.paint.Color
 import javafx.scene.paint.CycleMethod
 import javafx.scene.paint.LinearGradient
@@ -10,6 +11,7 @@ class MainPanelStyle : Stylesheet() {
 
     companion object {
         val statusBarClass by cssclass()
+        val tableClass by cssclass()
     }
 
     init {
@@ -38,6 +40,10 @@ class MainPanelStyle : Stylesheet() {
 
             minHeight = 25.px
             padding = box(paddingTop, paddingRight, paddingBottom, paddingLeft)
+        }
+
+        tableClass {
+            focusColor = Color.WHITE
         }
     }
 }
