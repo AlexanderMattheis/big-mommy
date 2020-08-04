@@ -1,18 +1,16 @@
 package app.panels.main_panel
 
-import javafx.beans.property.SimpleStringProperty
-import javafx.scene.control.TableColumn
 import tornadofx.*
 
 class MainPanelView : View("Big Mommy") {
-    private val controller : MainPanelController = MainPanelController(this)
+    private val controller: MainPanelController by inject()
 
     override val root = borderpane {
         importStylesheet(MainPanelStyle::class)
 
         top = menubar {
             menu("File") {
-                item("Open", "Shortcut+O").action { controller.openFile() }
+                item("Open", "Shortcut+O").action { controller.openFileDialog(super.currentWindow) }
             }
 
             menu("Edit") {
