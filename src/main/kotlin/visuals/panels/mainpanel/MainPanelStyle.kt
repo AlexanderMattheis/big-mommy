@@ -1,15 +1,16 @@
-package app.panels.main_panel
+package visuals.panels.mainpanel
 
-import javafx.scene.layout.Border
 import javafx.scene.paint.Color
 import javafx.scene.paint.CycleMethod
 import javafx.scene.paint.LinearGradient
 import javafx.scene.paint.Stop
+import system.defaults.Colors
 import tornadofx.*
 
 class MainPanelStyle : Stylesheet() {
 
     companion object {
+        val sidebarClass by cssclass()
         val statusBarClass by cssclass()
         val tableClass by cssclass()
     }
@@ -29,14 +30,21 @@ class MainPanelStyle : Stylesheet() {
         }
 
         // CLASSES
+        sidebarClass {
+            backgroundColor += c(Colors.LIGHT_GRAY)
+            borderColor += box(c(Colors.LIGHT_GRAY))
+            maxWidth = 144.px
+        }
+
         statusBarClass {
-            backgroundColor += LinearGradient(0.0, 0.0, 0.0, 25.0,
+            backgroundColor += LinearGradient(
+                0.0, 0.0, 0.0, 25.0,
                 false, CycleMethod.REFLECT,
                 Stop(0.0, Color.WHITE),
                 Stop(25.0, Color.LIGHTGRAY)
             )
+            borderColor += box(c(Colors.LIGHT_GRAY))
             borderInsets += box(borderTop, border, border, border)
-            borderColor += box(c("#B5B5B5"))
 
             minHeight = 25.px
             padding = box(paddingTop, paddingRight, paddingBottom, paddingLeft)

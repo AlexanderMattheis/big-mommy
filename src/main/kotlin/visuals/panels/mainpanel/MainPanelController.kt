@@ -1,4 +1,4 @@
-package app.panels.main_panel
+package visuals.panels.mainpanel
 
 import javafx.beans.property.ReadOnlyObjectWrapper
 import javafx.beans.property.SimpleLongProperty

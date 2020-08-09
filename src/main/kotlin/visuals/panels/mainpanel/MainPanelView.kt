@@ -1,7 +1,9 @@
-package app.panels.main_panel
+package visuals.panels.mainpanel
 
+import javafx.geometry.Orientation
 import javafx.scene.control.TableView
 import tornadofx.*
+import visuals.components.numberinput.numberInput
 
 typealias Row = Map<String, String>
 
@@ -23,6 +25,24 @@ class MainPanelView : View("Big Mommy") {
             menu("Edit") {
                 item("Copy", "Shortcut+C")
                 item("Paste", "Shortcut+V")
+            }
+        }
+
+        left = form {
+            addClass(MainPanelStyle.sidebarClass)
+
+            fieldset("Lines", labelPosition = Orientation.VERTICAL) {
+                field("Lower Bound") {
+                    numberInput(minimumValue = 0, defaultValue = 0)
+                }
+
+                field("Upper Bound") {
+                    numberInput(minimumValue = 0, defaultValue = 1000)
+                }
+
+                field {
+                    button("Load")
+                }
             }
         }
 

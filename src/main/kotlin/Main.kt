@@ -1,6 +1,6 @@
 import tornadofx.App
 import tornadofx.launch
-import app.panels.main_panel.MainPanelView
+import visuals.panels.mainpanel.MainPanelView
 
 class BigMommy : App(MainPanelView::class)
 
