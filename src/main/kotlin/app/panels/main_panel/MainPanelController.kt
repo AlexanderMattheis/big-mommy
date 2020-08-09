@@ -1,10 +1,13 @@
 package app.panels.main_panel
 
+import javafx.beans.property.ReadOnlyObjectWrapper
 import javafx.beans.property.SimpleLongProperty
-import javafx.collections.FXCollections
 import javafx.collections.ObservableList
+import javafx.scene.control.TableColumn
+import javafx.scene.control.TableView
 import javafx.stage.FileChooser
 import javafx.stage.Window
+import javafx.util.Callback
 import tornadofx.Controller
 import tornadofx.asObservable
 import tornadofx.runLater
@@ -13,39 +16,30 @@ import java.nio.file.Files
 import java.nio.file.Paths
 import java.util.function.Supplier
 import java.util.stream.Stream
-import kotlin.collections.List
-import kotlin.collections.Map
-import kotlin.collections.emptyList
-import kotlin.collections.mutableListOf
-import kotlin.collections.mutableMapOf
-import kotlin.collections.plusAssign
 import kotlin.collections.set
-import kotlin.collections.zip
 
 
 class MainPanelController : Controller() {
 
-    val rows = mutableListOf<Map<String, String>>().asObservable()
     val separator = ","
-
     val linesProperty = SimpleLongProperty(0L)
 
-    fun openFileDialog(parent: Window?) {
+    fun openLoadingDialog(parent: Window?, table: TableView<Row>) {
         val fileChooser = FileChooser();
         val file = fileChooser.showOpenDialog(parent)
 
         if (file != null) {
             runLater {
-                loadData(file)
+                loadFileInto(file, table)
             }
         }
     }
 
-    private fun loadData(file: File) {
+    private fun loadFileInto(file: File, table: TableView<Row>) {
         val linesStreamSupplier: Supplier<Stream<String>> = Supplier { Files.lines(Paths.get(file.path)) }
 
         val header = getHeaderElements(linesStreamSupplier.get(), separator)
-        val rows = mutableListOf<Map<String, String>>().asObservable()
+        val rows = mutableListOf<Row>().asObservable()
 
         linesStreamSupplier.get().forEach { line ->
             val lineElements = getLineElements(line, separator)
@@ -58,8 +52,8 @@ class MainPanelController : Controller() {
             rows += mapping
         }
 
-        this.rows.setAll(rows)
         linesProperty.value = linesStreamSupplier.get().count()
+        populateToTable(rows, table)
     }
 
     private fun getHeaderElements(linesStream: Stream<String>, separator: String): List<String> {
@@ -69,5 +63,33 @@ class MainPanelController : Controller() {
 
     private fun getLineElements(line: String, separator: String): List<String> {
         return line.split(separator)
+    }
+
+    private fun populateToTable(rows: ObservableList<Row>, table: TableView<Row>) {
+        table.columns.clear()
+        table.items.clear()
+
+        createHeadings(rows, table)
+        createContents(rows, table)
+    }
+
+    private fun createHeadings(rows: ObservableList<Row>, table: TableView<Row>) {
+        val columns = ArrayList<TableColumn<Row, Any>>()
+        val keys = rows.first().keys
+
+        for (key in keys) {
+            val column = TableColumn<Row, Any>(key)
+            column.cellValueFactory = Callback { param ->
+                ReadOnlyObjectWrapper(param.value.get(key))
+            }
+            columns.add(column)
+        }
+
+        table.columns.addAll(columns)
+    }
+
+    private fun createContents(rows: ObservableList<Row>, table: TableView<Row>) {
+        val contents = rows.minus(rows.first())  // header should not be added
+        table.items.addAll(contents)
     }
 }
