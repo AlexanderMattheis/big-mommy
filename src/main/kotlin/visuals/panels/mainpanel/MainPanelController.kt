@@ -2,6 +2,7 @@ package visuals.panels.mainpanel
 
 import javafx.beans.property.ReadOnlyObjectWrapper
 import javafx.beans.property.SimpleLongProperty
+import javafx.beans.property.SimpleStringProperty
 import javafx.collections.ObservableList
 import javafx.scene.control.TableColumn
 import javafx.scene.control.TableView
@@ -21,38 +22,52 @@ import kotlin.collections.set
 
 class MainPanelController : Controller() {
 
-    val separator = ","
+    val separatorProperty = SimpleStringProperty(",")
     val linesProperty = SimpleLongProperty(0L)
 
-    fun openLoadingDialog(parent: Window?, table: TableView<Row>) {
-        val fileChooser = FileChooser();
+    private var currentFilePath: String? = null
+
+    fun openLoadingDialog(parent: Window?, table: TableView<Row>, firstLine: Int, lastLine: Int) {
+        val fileChooser = FileChooser()
         val file = fileChooser.showOpenDialog(parent)
 
         if (file != null) {
             runLater {
-                loadFileInto(file, table)
+                this.currentFilePath = file.path
+                loadFileInto(table, firstLine, lastLine)
             }
         }
     }
 
-    private fun loadFileInto(file: File, table: TableView<Row>) {
-        val linesStreamSupplier: Supplier<Stream<String>> = Supplier { Files.lines(Paths.get(file.path)) }
+    fun loadFileInto(table: TableView<Row>, firstLine: Int, lastLine: Int) {
+        val filepath = this.currentFilePath ?: return
+        println(firstLine)
+        println(lastLine)
 
+        val linesStreamSupplier: Supplier<Stream<String>> = Supplier { Files.lines(Paths.get(filepath)) }
+        val numberOfLines = linesStreamSupplier.get().count()
+
+        val separator = separatorProperty.value
         val header = getHeaderElements(linesStreamSupplier.get(), separator)
         val rows = mutableListOf<Row>().asObservable()
 
+        var lineCounter = 0
+
         linesStreamSupplier.get().forEach { line ->
-            val lineElements = getLineElements(line, separator)
-            val mapping = mutableMapOf<String, String>()
+            if (lineCounter in firstLine..lastLine) {
+                val lineElements = getLineElements(line, separator)
+                val mapping = mutableMapOf<String, String>()
 
-            for ((heading, lineElement) in header zip lineElements) {
-                mapping[heading] = lineElement
+                for ((heading, lineElement) in header zip lineElements) {
+                    mapping[heading] = lineElement
+                }
+
+                rows += mapping
             }
-
-            rows += mapping
+            lineCounter++
         }
 
-        linesProperty.value = linesStreamSupplier.get().count()
+        linesProperty.value = numberOfLines
         populateToTable(rows, table)
     }
 

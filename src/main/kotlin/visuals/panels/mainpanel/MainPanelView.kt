@@ -3,6 +3,7 @@ package visuals.panels.mainpanel
 import javafx.geometry.Orientation
 import javafx.scene.control.TableView
 import tornadofx.*
+import visuals.components.numberinput.NumberInput
 import visuals.components.numberinput.numberInput
 
 typealias Row = Map<String, String>
@@ -10,16 +11,23 @@ typealias Row = Map<String, String>
 class MainPanelView : View("Big Mommy") {
     private val controller: MainPanelController by inject()
 
-    private var table: TableView<Row> = TableView<Row>().apply {
+    private val table: TableView<Row> = TableView<Row>().apply {
         addClass(MainPanelStyle.tableClass)
     }
+
+    private val minimumNumberInput: NumberInput = NumberInput(minimumValue = 0, defaultValue = 0)
+    private val maximumNumberInput: NumberInput = NumberInput(minimumValue = 0, defaultValue = 1000)
 
     override val root = borderpane {
         importStylesheet(MainPanelStyle::class)
 
         top = menubar {
             menu("File") {
-                item("Open", "Shortcut+O").action { controller.openLoadingDialog(super.currentWindow, table) }
+                item("Open", "Shortcut+O").action {
+                    val firstLine = minimumNumberInput.getValue()
+                    val lastLine = maximumNumberInput.getValue()
+                    controller.openLoadingDialog(super.currentWindow, table, firstLine, lastLine)
+                }
             }
 
             menu("Edit") {
@@ -33,15 +41,23 @@ class MainPanelView : View("Big Mommy") {
 
             fieldset("Lines", labelPosition = Orientation.VERTICAL) {
                 field("Lower Bound") {
-                    numberInput(minimumValue = 0, defaultValue = 0)
+                    this += minimumNumberInput
                 }
 
                 field("Upper Bound") {
-                    numberInput(minimumValue = 0, defaultValue = 1000)
+                    this += maximumNumberInput
+                }
+
+                field("Column Separator") {
+                    textfield(",")
                 }
 
                 field {
-                    button("Load")
+                    button("Load").action {
+                        val firstLine = minimumNumberInput.getValue()
+                        val lastLine = maximumNumberInput.getValue()
+                        controller.loadFileInto(table, firstLine, lastLine)
+                    }
                 }
             }
         }

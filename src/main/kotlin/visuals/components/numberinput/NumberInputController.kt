@@ -3,8 +3,8 @@ package visuals.components.numberinput
 import javafx.beans.property.SimpleStringProperty
 import tornadofx.Controller
 
-class NumberInputController(private val minimumValue: Int?, private val defaultValue: Int, private val maximumValue: Int?) : Controller() {
-    val valueProperty = SimpleStringProperty(defaultValue.toString())
+class NumberInputController(private val minimumValue: Int?, defaultValue: Int?, private val maximumValue: Int?) : Controller() {
+    val valueProperty = SimpleStringProperty(defaultValue?.toString() ?: "0")
 
     fun increase() {
         if (valueProperty.value.isEmpty()) {
@@ -32,5 +32,13 @@ class NumberInputController(private val minimumValue: Int?, private val defaultV
         } else {
             valueProperty.value = newValue.toString()
         }
+    }
+
+    fun getValue(): Int {
+        if (valueProperty.value.isEmpty()) {
+            return 0
+        }
+
+        return valueProperty.value.toInt()
     }
 }
