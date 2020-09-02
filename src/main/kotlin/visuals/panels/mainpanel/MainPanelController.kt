@@ -41,8 +41,6 @@ class MainPanelController : Controller() {
 
     fun loadFileInto(table: TableView<Row>, firstLine: Int, lastLine: Int) {
         val filepath = this.currentFilePath ?: return
-        println(firstLine)
-        println(lastLine)
 
         val linesStreamSupplier: Supplier<Stream<String>> = Supplier { Files.lines(Paths.get(filepath)) }
         val numberOfLines = linesStreamSupplier.get().count()

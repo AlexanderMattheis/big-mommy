@@ -1,6 +1,5 @@
 package visuals.components.numberinput
 
-import javafx.event.EventTarget
 import javafx.scene.layout.BorderPane
 import tornadofx.*
 
@@ -11,6 +10,7 @@ class NumberInput(minimumValue: Int? = null, defaultValue: Int? = 0, maximumValu
         importStylesheet(NumberInputStyle::class)
 
         center = textfield(controller.valueProperty) {
+            filterInput { controller.filter(it) }
             addClass(NumberInputStyle.numberInputClass)
         }
 
@@ -29,10 +29,3 @@ class NumberInput(minimumValue: Int? = null, defaultValue: Int? = 0, maximumValu
         return controller.getValue()
     }
 }
-
-fun EventTarget.numberInput(
-    minimumValue: Int? = null,
-    defaultValue: Int? = 0,
-    maximumValue: Int? = null,
-    op: NumberInput.() -> Unit = {}
-) = opcr(this, NumberInput(minimumValue, defaultValue, maximumValue), op)

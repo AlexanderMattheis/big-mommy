@@ -4,7 +4,6 @@ import javafx.geometry.Orientation
 import javafx.scene.control.TableView
 import tornadofx.*
 import visuals.components.numberinput.NumberInput
-import visuals.components.numberinput.numberInput
 
 typealias Row = Map<String, String>
 
